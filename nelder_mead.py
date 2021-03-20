@@ -31,6 +31,11 @@ def reflection(worst,centroid,coeff,loss_function,m,w):
     reflection_value = loss_function(m, np.reshape(reflection_point,(3,3)) ,w)
     return (reflection_value, reflection_point)
 
+def expansion(reflection,centroid,coeff,loss_function,m,w):
+    expansion_point= centroid[1] * (1-coeff) + coeff*reflection[1]
+    expansion_value = loss_function(m, np.reshape(expansion_point,(3,3)) ,w)
+    return(expansion_value,expansion_point)
+
 
 def nelder_mead_optimizer(loss_function,m,w,start,max_it = 50,toll = 10e-6,reflect_coeff = 1.0,exp_coeff = 2.0,contract_coeff = 0.5,shrink_coeff = 0.5):
     #Create list of tuples (loss function value, vertex)
@@ -47,13 +52,34 @@ def nelder_mead_optimizer(loss_function,m,w,start,max_it = 50,toll = 10e-6,refle
         #Sorting wrt the loss_function value of vertices and assign the best/worst vertex to respectevely variables
         simplex_list = sorted(simplex_list, key= lambda pair: pair[0])
         best_tuple = simplex_list[0]
-        worst_tuple = simplex_list[len(simplex_list)-1]
+        second_worst_tuple = simplex_list[-2]
+        worst_tuple = simplex_list[-1]
 
         #Find the centroid of the simplex
         centroid_tuple = centroid_calculation(simplex_list,loss_function,m,w)
 
         #Reflection
         reflection_tuple = reflection(worst_tuple,centroid_tuple,reflect_coeff,loss_function,m,w)
+        #Reflection evaluation
+        if( reflection_tuple[0] >= best_tuple[0] and reflection_tuple[0] < second_worst_tuple[0] ):
+            #accept the reflection and impose the worst equal to the reflection_tuple
+            simplex_list[-1] = reflection_tuple
+            print("reflection")
+        elif( reflection_tuple[0] < best_tuple[0]):
+            #Expansion
+            expansion_tuple = expansion(reflection_tuple,centroid_tuple,exp_coeff,loss_function,m,w)
+            #Expansion evaluation
+            if(expansion_tuple[0] < reflection_tuple[0]):
+                #accept the expansion and impose the worst equal to the refletion_tuple
+                simplex_list[-1] = expansion_tuple
+                print("expansion")
+            else:
+                #accept the reflection and impose the worst equal to the reflection_tuple
+                simplex_list[-1] = reflection_tuple
+                print("reflection")
+        #TODO
+        #ELIF: contraction 
+
 
         
 
