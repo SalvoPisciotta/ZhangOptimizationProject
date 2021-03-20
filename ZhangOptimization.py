@@ -1,8 +1,9 @@
 import numpy as np
+from numpy import linalg as la
 import cv2
 
-def processCorners(dir):
-  #Load the image in greyscale color
+def process_corners(dir):
+  #Load the image in greyscale color from the given directory path
   img=cv2.imread(dir,cv2.IMREAD_GRAYSCALE)
 
   #Set pattern size for openCv m=number corners in (columns,rows) coordinates
@@ -48,6 +49,29 @@ def processCorners(dir):
 
   return (corners_image_points, coordinates_3D_points)
 
-#Name of the file containing the image
-dirname='Chessboard10.jpg'
-w,m = processCorners(dirname)
+    
+
+
+def loss_function(m,H,w):
+    # m is a matrix of points where rows are projective image points
+    # H is the homography matrix
+    # w is a matrix where rows are projective real points with only x y due to planar pattern
+    sum = 0
+    num_points = m.shape[0]
+    for i in range(num_points):
+        sum = sum + la.norm(m[i,:].T - H @ w[i,:].T,2)**2
+    return sum
+
+if __name__ == '__main__':
+    #Set the name of the image file
+    img = 'Chessboard.jpg'
+    #Get m and w that represent respectively the image coordinates and the world coordinates already trasformed from R to P
+    m , w = process_corners(img)
+    #Call the function that will return the min value of H
+    #Function that prints the points of the image and the projection error refering to the optimal H
+
+
+
+
+
+    
