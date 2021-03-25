@@ -1,15 +1,16 @@
 import numpy as np
 from numpy import linalg as la
 import ZhangOptimization as zo
+from scipy.optimize import rosen
 
 #NOTE:
 #Access to value = print(simplex_list[0][0])
 #Access to vector = print(simplex_list[0][1])
 #Understand how to generate the starting values
 
-start = [np.random.rand(9) for i in range(10)]
-w = np.random.rand(5,3)
-m = np.random.rand(5,3)
+#start = [np.random.rand(9) for i in range(10)]
+#w = np.random.rand(5,3)
+#m = np.random.rand(5,3)
 
 #Function for print only the values of the list of tuples
 def printing(l):
@@ -111,4 +112,6 @@ def nelder_mead_optimizer(loss_function,m,w,start,max_it = 50,toll = 10e-6,refle
 
 
 # Testing the function
-nelder_mead_optimizer(zo.loss_function,m,w,start)
+start = ([[1.0,3.0], [2.0,7.0], [5.0,2.0]])
+solution = nelder_mead_optimizer(rosen,[],[],start)
+print(solution)
