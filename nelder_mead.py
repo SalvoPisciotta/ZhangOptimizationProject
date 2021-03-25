@@ -22,29 +22,34 @@ def centroid_calculation(simplex,loss_function,m,w):
     for i in range(len(simplex)-1):
         centroid += simplex[i][1]
     centroid /= float( len(simplex)-1 )
-    centroid_value = loss_function(m,np.reshape(centroid,(3,3)),w)
+    #centroid_value = loss_function(m,np.reshape(centroid,(3,3)),w)
+    centroid_value = loss_function(centroid)
 
     return (centroid_value,centroid)
 
 def reflection(worst,centroid,coeff,loss_function,m,w):
     reflection_point = centroid[1] * ( 1.0 + coeff ) - coeff * worst[1]
-    reflection_value = loss_function(m, np.reshape(reflection_point,(3,3)) ,w)
+    #reflection_value = loss_function(m, np.reshape(reflection_point,(3,3)) ,w)
+    reflection_value = loss_function(reflection_point)
     return (reflection_value, reflection_point)
 
 def expansion(reflection,centroid,coeff,loss_function,m,w):
     expansion_point = centroid[1] * (1-coeff) + coeff*reflection[1]
-    expansion_value = loss_function(m, np.reshape(expansion_point,(3,3)) ,w)
+    #expansion_value = loss_function(m, np.reshape(expansion_point,(3,3)) ,w)
+    expansion_value = loss_function(expansion_point)
     return (expansion_value,expansion_point)
 
 def contraction(worst,centroid,coeff,loss_function,m,w):
     contraction_point = centroid[1] * (1-coeff) + coeff*worst[1]
-    contraction_value = loss_function(m, np.reshape(contraction_point,(3,3)), w)
+    #contraction_value = loss_function(m, np.reshape(contraction_point,(3,3)), w)
+    contraction_value = loss_function(contraction_point)
     return (contraction_value,contraction_point)
 
 def shrink(simplex,coeff,loss_function,m,w):
     for i in range (1,len(simplex)):
         shrink_point = (simplex[0][1]+simplex[i][1])/2
-        shrink_value = loss_function(m, np.reshape(shrink_point, (3,3)), w)
+        #shrink_value = loss_function(m, np.reshape(shrink_point, (3,3)), w)
+        shrink_value = loss_function(shrink_point)
         simplex[i] = (shrink_value, shrink_point)
     return simplex
 
@@ -53,7 +58,8 @@ def nelder_mead_optimizer(loss_function,m,w,start,max_it = 50,toll = 10e-6,refle
     #Create list of tuples (loss function value, vertex)
     simplex_list = []
     for i in range(len(start)):
-        simplex_list.append( (loss_function(m, np.reshape(start[i],(3,3)), w) , start[i] )  )
+        #simplex_list.append( (loss_function(m, np.reshape(start[i],(3,3)), w) , start[i] )  )
+        simplex_list.append( (loss_function(start[i]), start[i]))
 
     counter_it = 0
     best_value = 1
@@ -104,4 +110,5 @@ def nelder_mead_optimizer(loss_function,m,w,start,max_it = 50,toll = 10e-6,refle
     return simplex_list[0]
 
 
+# Testing the function
 nelder_mead_optimizer(zo.loss_function,m,w,start)
