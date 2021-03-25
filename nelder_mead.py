@@ -32,9 +32,21 @@ def reflection(worst,centroid,coeff,loss_function,m,w):
     return (reflection_value, reflection_point)
 
 def expansion(reflection,centroid,coeff,loss_function,m,w):
-    expansion_point= centroid[1] * (1-coeff) + coeff*reflection[1]
+    expansion_point = centroid[1] * (1-coeff) + coeff*reflection[1]
     expansion_value = loss_function(m, np.reshape(expansion_point,(3,3)) ,w)
-    return(expansion_value,expansion_point)
+    return (expansion_value,expansion_point)
+
+def contraction(worst,centroid,coeff,loss_function,m,w):
+    contraction_point = centroid[1] * (1-coeff) + coeff*worst[1]
+    contraction_value = loss_function(m, np.reshape(contraction_point,(3,3)), w)
+    return (contraction_value,contraction_point)
+
+def shrink(simplex,coeff,loss_function,m,w):
+    for i in range (1,len(simplex)):
+        shrink_point = (simplex[0][1]+simplex[i][1])/2
+        shrink_value = loss_function(m, np.reshape(shrink_point, (3,3)), w)
+        simplex[i] = (shrink_value, shrink_point)
+    return simplex
 
 
 def nelder_mead_optimizer(loss_function,m,w,start,max_it = 50,toll = 10e-6,reflect_coeff = 1.0,exp_coeff = 2.0,contract_coeff = 0.5,shrink_coeff = 0.5):
@@ -77,15 +89,19 @@ def nelder_mead_optimizer(loss_function,m,w,start,max_it = 50,toll = 10e-6,refle
                 #accept the reflection and impose the worst equal to the reflection_tuple
                 simplex_list[-1] = reflection_tuple
                 print("reflection")
-        #TODO
-        #ELIF: contraction 
+        elif(reflection_tuple[0]<worst_tuple[0] and reflection_tuple[0] >= second_worst_tuple[0]):
+            #Contraction
+            contraction_tuple = contraction(worst_tuple,centroid_tuple,contract_coeff,loss_function,m,w)
+            #Contraction evaluation
+            if(contraction_tuple[0] < worst_tuple[0]):
+                #accept the contraction and impose the worst equal to the contraction_tuple
+                simplex_list[-1] = contraction_tuple
+                print("contraction")
+            else:
+                #Shrink and update the simplex_list
+                simplex_list = shrink(simplex_list,shrink_coeff,loss_function,m,w)
 
+    return simplex_list[0]
 
-        
-
-
-
-
-    return True
 
 nelder_mead_optimizer(zo.loss_function,m,w,start)
