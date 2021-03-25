@@ -74,6 +74,10 @@ def nelder_mead_optimizer(loss_function,m,w,start,max_it = 50,toll = 10e-6,refle
         second_worst_tuple = simplex_list[-2]
         worst_tuple = simplex_list[-1]
 
+        print("Best value = {} at iteration = {}".format(best_tuple[0],counter_it))
+        print("Worst value = {} at iteration = {}".format(worst_tuple[0],counter_it))
+        print("Second worst value = {} at iteration = {}".format(second_worst_tuple[0],counter_it))
+
         #Find the centroid of the simplex
         centroid_tuple = centroid_calculation(simplex_list,loss_function,m,w)
 
@@ -112,6 +116,6 @@ def nelder_mead_optimizer(loss_function,m,w,start,max_it = 50,toll = 10e-6,refle
 
 
 # Testing the function
-start = ([[1.0,3.0], [2.0,7.0], [5.0,2.0]])
+start = ([ np.array([1.0,3.0]), np.array([2.0,7.0]), np.array([5.0,2.0]) ])
 solution = nelder_mead_optimizer(rosen,[],[],start)
 print(solution)
