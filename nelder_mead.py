@@ -47,7 +47,7 @@ def contraction(worst,centroid,coeff,loss_function,m,w):
     return (contraction_value,contraction_point)
 
 def shrink(simplex,coeff,loss_function,m,w):
-    for i in range (1,len(simplex)):
+    for i in range (1,len(simplex)+1):
         shrink_point = (simplex[0][1]+simplex[i][1])/2
         #shrink_value = loss_function(m, np.reshape(shrink_point, (3,3)), w)
         shrink_value = loss_function(shrink_point)
@@ -55,7 +55,7 @@ def shrink(simplex,coeff,loss_function,m,w):
     return simplex
 
 
-def nelder_mead_optimizer(loss_function,m,w,start,max_it = 50,toll = 10e-6,reflect_coeff = 1.0,exp_coeff = 2.0,contract_coeff = 0.5,shrink_coeff = 0.5):
+def nelder_mead_optimizer(loss_function,m,w,start,max_it = 5,toll = 10e-6,reflect_coeff = 1.0,exp_coeff = 2.0,contract_coeff = 0.5,shrink_coeff = 0.5):
     #Create list of tuples (loss function value, vertex)
     simplex_list = []
     for i in range(len(start)):
@@ -64,6 +64,7 @@ def nelder_mead_optimizer(loss_function,m,w,start,max_it = 50,toll = 10e-6,refle
 
     counter_it = 0
     best_value = 1
+    flag=True
 
     while(counter_it<=max_it and best_value >= toll):
         counter_it += 1
@@ -74,21 +75,26 @@ def nelder_mead_optimizer(loss_function,m,w,start,max_it = 50,toll = 10e-6,refle
         second_worst_tuple = simplex_list[-2]
         worst_tuple = simplex_list[-1]
 
-        print("Best value = {} at iteration = {}".format(best_tuple[0],counter_it))
-        print("Worst value = {} at iteration = {}".format(worst_tuple[0],counter_it))
-        print("Second worst value = {} at iteration = {}".format(second_worst_tuple[0],counter_it))
-
         #Find the centroid of the simplex
         centroid_tuple = centroid_calculation(simplex_list,loss_function,m,w)
 
         #Reflection
         reflection_tuple = reflection(worst_tuple,centroid_tuple,reflect_coeff,loss_function,m,w)
-        #Reflection evaluation
+        if(flag):
+            print('SIMPLEX= {} '.format(simplex_list))
+            print('CENTROID= {} '.format(centroid_tuple))
+            print('REFLECTION = {}'.format(reflection_tuple))
+            print("Best value = {} at iteration = {}".format(best_tuple[0],counter_it))
+            print("Worst value = {} at iteration = {}".format(worst_tuple[0],counter_it))
+            print("Second worst value = {} at iteration = {}".format(second_worst_tuple[0],counter_it))
+            print("--------------------------------------------------")
+
+        #Reflection evaluation 
         if( reflection_tuple[0] >= best_tuple[0] and reflection_tuple[0] < second_worst_tuple[0] ):
             #accept the reflection and impose the worst equal to the reflection_tuple
             simplex_list[-1] = reflection_tuple
             print("reflection")
-        elif( reflection_tuple[0] < best_tuple[0]):
+        elif(reflection_tuple[0] < best_tuple[0]):
             #Expansion
             expansion_tuple = expansion(reflection_tuple,centroid_tuple,exp_coeff,loss_function,m,w)
             #Expansion evaluation
@@ -111,11 +117,19 @@ def nelder_mead_optimizer(loss_function,m,w,start,max_it = 50,toll = 10e-6,refle
             else:
                 #Shrink and update the simplex_list
                 simplex_list = shrink(simplex_list,shrink_coeff,loss_function,m,w)
-
+                print("shrink")
+        else:
+            print("FATTO NULLA")
+            
     return simplex_list[0]
 
 
 # Testing the function
-start = ([ np.array([1.0,3.0]), np.array([2.0,7.0]), np.array([5.0,2.0]) ])
+start = ([ np.array([1.0,11.0]), np.array([2.0,7.0]), np.array([5.0,2.0]) ])
 solution = nelder_mead_optimizer(rosen,[],[],start)
 print(solution)
+
+
+#COMMENTI:  -E SE IL RIFLECTION E' IL PEGGIORE DI TUTTI? NON GESTITO
+#           -
+
