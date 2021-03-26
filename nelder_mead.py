@@ -55,7 +55,7 @@ def shrink(simplex,coeff,loss_function,m,w):
     return simplex
 
 
-def nelder_mead_optimizer(loss_function,m,w,start,max_it = 5,toll = 10e-6,reflect_coeff = 1.0,exp_coeff = 2.0,contract_coeff = 0.5,shrink_coeff = 0.5):
+def nelder_mead_optimizer(loss_function,m,w,start,max_it = 100,toll = 10e-6,reflect_coeff = 1.0,exp_coeff = 2.0,contract_coeff = 0.5,shrink_coeff = 0.5):
     #Create list of tuples (loss function value, vertex)
     simplex_list = []
     for i in range(len(start)):
@@ -94,11 +94,11 @@ def nelder_mead_optimizer(loss_function,m,w,start,max_it = 5,toll = 10e-6,reflec
             #accept the reflection and impose the worst equal to the reflection_tuple
             simplex_list[-1] = reflection_tuple
             print("reflection")
-        elif(reflection_tuple[0] < best_tuple[0]):
+        if(reflection_tuple[0] < best_tuple[0]):
             #Expansion
             expansion_tuple = expansion(reflection_tuple,centroid_tuple,exp_coeff,loss_function,m,w)
-            #Expansion evaluation
-            if(expansion_tuple[0] < reflection_tuple[0]):
+            #Expansion evaluation ERRORE DOVREBBE BEST
+            if(expansion_tuple[0] < best_tuple[0]):
                 #accept the expansion and impose the worst equal to the refletion_tuple
                 simplex_list[-1] = expansion_tuple
                 print("expansion")
@@ -106,11 +106,12 @@ def nelder_mead_optimizer(loss_function,m,w,start,max_it = 5,toll = 10e-6,reflec
                 #accept the reflection and impose the worst equal to the reflection_tuple
                 simplex_list[-1] = reflection_tuple
                 print("reflection")
-        elif(reflection_tuple[0]<worst_tuple[0] and reflection_tuple[0] >= second_worst_tuple[0]):
+        #and reflection_tuple[0] >= second_worst_tuple[0]):
+        if(reflection_tuple[0] > worst_tuple[0]):   
             #Contraction
             contraction_tuple = contraction(worst_tuple,centroid_tuple,contract_coeff,loss_function,m,w)
             #Contraction evaluation
-            if(contraction_tuple[0] < worst_tuple[0]):
+            if(contraction_tuple[0] <= worst_tuple[0]):
                 #accept the contraction and impose the worst equal to the contraction_tuple
                 simplex_list[-1] = contraction_tuple
                 print("contraction")
@@ -119,8 +120,21 @@ def nelder_mead_optimizer(loss_function,m,w,start,max_it = 5,toll = 10e-6,reflec
                 simplex_list = shrink(simplex_list,shrink_coeff,loss_function,m,w)
                 print("shrink")
         else:
-            print("FATTO NULLA")
-            
+            #accept the reflection and impose the worst equal to the reflection_tuple
+            simplex_list[-1] = reflection_tuple
+            print("reflection")
+            #Contraction
+            contraction_tuple = contraction(worst_tuple,centroid_tuple,contract_coeff,loss_function,m,w)
+            #Contraction evaluation
+            if(contraction_tuple[0] <= worst_tuple[0]):
+                #accept the contraction and impose the worst equal to the contraction_tuple
+                simplex_list[-1] = contraction_tuple
+                print("contraction")
+            else:
+                #Shrink and update the simplex_list
+                simplex_list = shrink(simplex_list,shrink_coeff,loss_function,m,w)
+                print("shrink")
+
     return simplex_list[0]
 
 
