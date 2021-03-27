@@ -55,7 +55,7 @@ def shrink(simplex,coeff,loss_function,m,w):
     return simplex
 
 
-def nelder_mead_optimizer(loss_function,m,w,start,max_it = 100,toll = 10e-6,reflect_coeff = 1.0,exp_coeff = 2.0,contract_coeff = 0.5,shrink_coeff = 0.5):
+def nelder_mead_optimizer(loss_function, m, w, start ,max_it = 100, toll = 10e-6, reflect_coeff = 1.0, exp_coeff = 2.0, contract_coeff = 0.5, shrink_coeff = 0.5):
     #Create list of tuples (loss function value, vertex)
     simplex_list = []
     for i in range(len(start)):
@@ -63,10 +63,12 @@ def nelder_mead_optimizer(loss_function,m,w,start,max_it = 100,toll = 10e-6,refl
         simplex_list.append( (loss_function(start[i]), start[i]))
 
     counter_it = 0
-    best_value = 1
-    flag=True
+    # Initialized to satisfy tollerance criterion
+    best_tuple = (1, [])
+    # Salient values at each iterate
+    flag = True
 
-    while(counter_it<=max_it and best_value >= toll):
+    while(counter_it <= max_it and best_tuple[0] >= toll):
         counter_it += 1
 
         #Sorting wrt the loss_function value of vertices and assign the best/worst vertex to respectevely variables
@@ -76,7 +78,7 @@ def nelder_mead_optimizer(loss_function,m,w,start,max_it = 100,toll = 10e-6,refl
         worst_tuple = simplex_list[-1]
 
         #Find the centroid of the simplex
-        centroid_tuple = centroid_calculation(simplex_list,loss_function,m,w)
+        centroid_tuple = centroid_calculation(simplex_list, loss_function, m, w)
 
         #Reflection
         reflection_tuple = reflection(worst_tuple,centroid_tuple,reflect_coeff,loss_function,m,w)
@@ -90,7 +92,7 @@ def nelder_mead_optimizer(loss_function,m,w,start,max_it = 100,toll = 10e-6,refl
             print("--------------------------------------------------")
 
         #Reflection evaluation 
-        if( reflection_tuple[0] >= best_tuple[0] and reflection_tuple[0] < second_worst_tuple[0] ):
+        if(reflection_tuple[0] >= best_tuple[0] and reflection_tuple[0] < second_worst_tuple[0]):
             #accept the reflection and impose the worst equal to the reflection_tuple
             simplex_list[-1] = reflection_tuple
             print("reflection")
