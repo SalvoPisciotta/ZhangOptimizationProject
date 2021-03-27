@@ -18,14 +18,15 @@ def printing(l):
     for i in range(len(l)):
         print('{}'.format(l[i][0] , l[i][1]))
 
-def generate_starting_points(point, num, stepsize):
+def generate_starting_points(point, stepsize):
     '''
     Given a point in n dimension generate a nondegenerate simplex
     Point must be a numpy array, num is the number of simplex points
     '''
+    num = point.shape[0]
     identity = np.eye(num)
     starting_points = [point]
-    for i in range(1,num):
+    for i in range(num):
         starting_points.append(point + stepsize * identity[i,:].T)
     return starting_points
 
@@ -59,7 +60,7 @@ def contraction(worst,centroid,coeff,loss_function,m,w):
     return (contraction_value,contraction_point)
 
 def shrink(simplex,coeff,loss_function,m,w):
-    for i in range (1,len(simplex)+1):
+    for i in range (1,len(simplex)):
         shrink_point = (simplex[0][1]+simplex[i][1])/2
         #shrink_value = loss_function(m, np.reshape(shrink_point, (3,3)), w)
         shrink_value = loss_function(shrink_point)
@@ -140,7 +141,7 @@ def nelder_mead_optimizer(loss_function, m, w, start ,max_it = 100, toll = 10e-6
 
 
 # Testing the function
-start = ([ np.array([1.0,11.0]), np.array([2.0,7.0]), np.array([5.0,2.0]) ])
+start = generate_starting_points(np.array([1.,11.]),10)
 solution = nelder_mead_optimizer(rosen,[],[],start)
 print(solution)
 
