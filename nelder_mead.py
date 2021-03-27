@@ -18,6 +18,18 @@ def printing(l):
     for i in range(len(l)):
         print('{}'.format(l[i][0] , l[i][1]))
 
+def generate_starting_points(point, num, stepsize):
+    '''
+    Given a point in n dimension generate a nondegenerate simplex
+    Point must be a numpy array, num is the number of simplex points
+    '''
+    identity = np.eye(num)
+    starting_points = [point]
+    for i in range(1,num):
+        starting_points.append(point + stepsize * identity[i,:].T)
+    return starting_points
+
+
 def centroid_calculation(simplex,loss_function,m,w):
     centroid = np.zeros(len(simplex)-1)
     for i in range(len(simplex)-1):
