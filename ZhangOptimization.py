@@ -1,6 +1,26 @@
 import numpy as np
 from numpy import linalg as la
 import cv2
+from matplotlib import pyplot as plt
+import time
+
+def print_correspondences(image_dir, optima, value, first_list, second_list):
+    '''
+    image_dir: path of the image to show
+    optima: optima point whose coordinates will be shown
+    value: value of the optima using a function
+    first_list: first list of points to show on the image, they must be a 2d numpy array
+    second_list: second list of points to show on the image, they must be a 2d numpy array
+    '''
+    img = cv2.imread(image_dir ,cv2.IMREAD_GRAYSCALE)
+    plt.title("Optima: {}\n Value: {}".format(optima, value))
+    plt.imshow(img)
+    # Showing first list of point
+    plt.scatter(first_list[:,0],first_list[:,1], marker="o", color="red", label="Image point")
+    # Showing second list of point
+    plt.scatter(second_list[:,0],second_list[:,1], marker="o", color="green", label="Corresponding real point")
+    plt.legend(loc='upper right')
+    plt.show()
 
 
 def process_corners(dir):
@@ -45,8 +65,8 @@ def process_corners(dir):
   corners_points = corners.reshape(-1,2)
   corners_image_points = np.concatenate([corners_points, np.ones([corners_points.shape[0], 1], dtype=np.float32)], axis=-1)
 
-  print(corners_image_points)
-  print(coordinates_3D_points)
+  #print(corners_image_points)
+  #print(coordinates_3D_points)
 
   return (corners_image_points, coordinates_3D_points)
 
@@ -62,11 +82,22 @@ def loss_function(m,H,w):
     return sum
 
 
-#Function for print only the values of the list of tuples
 def printing(l):
     print('Value')
     for i in range(len(l)):
         print('{}'.format(l[i][0] , l[i][1]))
+
+def generate_starting_points(point, stepsize):
+    '''
+    Given a point in n dimension generate a nondegenerate simplex
+    Point must be a numpy array, num is the number of simplex points
+    '''
+    num = point.shape[0]
+    identity = np.eye(num)
+    starting_points = [point]
+    for i in range(num):
+        starting_points.append(point + stepsize * identity[i,:].T)
+    return starting_points
 
 
 def centroid_calculation(simplex,loss_function,m,w):
@@ -74,47 +105,55 @@ def centroid_calculation(simplex,loss_function,m,w):
     for i in range(len(simplex)-1):
         centroid += simplex[i][1]
     centroid /= float( len(simplex)-1 )
+    # centroid_value = loss_function(centroid)
     centroid_value = loss_function(m,np.reshape(centroid,(3,3)),w)
 
     return (centroid_value,centroid)
 
-
 def reflection(worst,centroid,coeff,loss_function,m,w):
     reflection_point = centroid[1] * ( 1.0 + coeff ) - coeff * worst[1]
+    # reflection_value = loss_function(reflection_point)
     reflection_value = loss_function(m, np.reshape(reflection_point,(3,3)) ,w)
+    
     return (reflection_value, reflection_point)
-
 
 def expansion(reflection,centroid,coeff,loss_function,m,w):
     expansion_point = centroid[1] * (1-coeff) + coeff*reflection[1]
+    # expansion_value = loss_function(expansion_point)
     expansion_value = loss_function(m, np.reshape(expansion_point,(3,3)) ,w)
-    return (expansion_value,expansion_point)
 
+    return (expansion_value,expansion_point)
 
 def contraction(worst,centroid,coeff,loss_function,m,w):
     contraction_point = centroid[1] * (1-coeff) + coeff*worst[1]
+    # contraction_value = loss_function(contraction_point)
     contraction_value = loss_function(m, np.reshape(contraction_point,(3,3)), w)
+    
     return (contraction_value,contraction_point)
-
 
 def shrink(simplex,coeff,loss_function,m,w):
     for i in range (1,len(simplex)):
         shrink_point = (simplex[0][1]+simplex[i][1])/2
+        # shrink_value = loss_function(shrink_point)
         shrink_value = loss_function(m, np.reshape(shrink_point, (3,3)), w)
         simplex[i] = (shrink_value, shrink_point)
     return simplex
 
 
-def nelder_mead_optimizer(loss_function,m,w,start,max_it = 50,toll = 10e-6,reflect_coeff = 1.0,exp_coeff = 2.0,contract_coeff = 0.5,shrink_coeff = 0.5):
+def nelder_mead_optimizer(loss_function, m, w, start ,max_it = 10000, toll = 10e-6, reflect_coeff = 1.0, exp_coeff = 2.0, contract_coeff = 0.5, shrink_coeff = 0.5):
     #Create list of tuples (loss function value, vertex)
     simplex_list = []
     for i in range(len(start)):
+         # simplex_list.append( (loss_function(start[i]), start[i]))
         simplex_list.append( (loss_function(m, np.reshape(start[i],(3,3)), w) , start[i] )  )
-
+       
     counter_it = 0
-    best_value = 1
+    # Initialized to satisfy tollerance criterion
+    best_tuple = (toll, [])
+    # Salient values at each iterate
+    flag = False
 
-    while(counter_it<=max_it and best_value >= toll):
+    while(counter_it <= max_it and best_tuple[0] >= toll):
         counter_it += 1
 
         #Sorting wrt the loss_function value of vertices and assign the best/worst vertex to respectevely variables
@@ -123,21 +162,36 @@ def nelder_mead_optimizer(loss_function,m,w,start,max_it = 50,toll = 10e-6,refle
         second_worst_tuple = simplex_list[-2]
         worst_tuple = simplex_list[-1]
 
+        # Print first and last iterate
+        if (counter_it == 1 or counter_it == max_it):
+            flag = True
+        else:
+            flag = False
+
         #Find the centroid of the simplex
-        centroid_tuple = centroid_calculation(simplex_list,loss_function,m,w)
+        centroid_tuple = centroid_calculation(simplex_list, loss_function, m, w)
 
         #Reflection
         reflection_tuple = reflection(worst_tuple,centroid_tuple,reflect_coeff,loss_function,m,w)
-        #Reflection evaluation
-        if( reflection_tuple[0] >= best_tuple[0] and reflection_tuple[0] < second_worst_tuple[0] ):
+        if(flag):
+            print('SIMPLEX= {} '.format(simplex_list))
+            print('CENTROID= {} '.format(centroid_tuple))
+            print('REFLECTION = {}'.format(reflection_tuple))
+            print("Best value = {} at iteration = {}".format(best_tuple[0],counter_it))
+            print("Worst value = {} at iteration = {}".format(worst_tuple[0],counter_it))
+            print("Second worst value = {} at iteration = {}".format(second_worst_tuple[0],counter_it))
+            print("--------------------------------------------------")
+
+        #Reflection evaluation 
+        if(reflection_tuple[0] >= best_tuple[0] and reflection_tuple[0] < second_worst_tuple[0]):
             #accept the reflection and impose the worst equal to the reflection_tuple
             simplex_list[-1] = reflection_tuple
             print("reflection")
-        elif( reflection_tuple[0] < best_tuple[0]):
+        if(reflection_tuple[0] < best_tuple[0]):
             #Expansion
             expansion_tuple = expansion(reflection_tuple,centroid_tuple,exp_coeff,loss_function,m,w)
-            #Expansion evaluation
-            if(expansion_tuple[0] < reflection_tuple[0]):
+            #Expansion evaluation ERRORE DOVREBBE BEST
+            if(expansion_tuple[0] < best_tuple[0]):
                 #accept the expansion and impose the worst equal to the refletion_tuple
                 simplex_list[-1] = expansion_tuple
                 print("expansion")
@@ -145,31 +199,49 @@ def nelder_mead_optimizer(loss_function,m,w,start,max_it = 50,toll = 10e-6,refle
                 #accept the reflection and impose the worst equal to the reflection_tuple
                 simplex_list[-1] = reflection_tuple
                 print("reflection")
-        elif(reflection_tuple[0]<worst_tuple[0] and reflection_tuple[0] >= second_worst_tuple[0]):
+        #and reflection_tuple[0] >= second_worst_tuple[0]):
+
+        if(reflection_tuple[0] >= second_worst_tuple[0]):   
             #Contraction
             contraction_tuple = contraction(worst_tuple,centroid_tuple,contract_coeff,loss_function,m,w)
             #Contraction evaluation
-            if(contraction_tuple[0] < worst_tuple[0]):
+            if(contraction_tuple[0] <= worst_tuple[0]):
                 #accept the contraction and impose the worst equal to the contraction_tuple
                 simplex_list[-1] = contraction_tuple
                 print("contraction")
             else:
                 #Shrink and update the simplex_list
                 simplex_list = shrink(simplex_list,shrink_coeff,loss_function,m,w)
+                print("shrink")
 
     return simplex_list[0]
 
 #Main
 if __name__ == '__main__':
-    #Set the name of the image file
+    start = time.time()
+    # Number of dimension
+    DIM = 9
+    # multiplicative factor
+    MUL = 50
+    # Set the name of the image file
     img = 'Chessboard.jpg'
-    #Get m and w that represent respectively the image coordinates and the world coordinates already trasformed from R to P
+    # Get m and w that represent respectively the image coordinates and the world coordinates already trasformed from R to P
+    # It takes about 1 minute
     m , w = process_corners(img)
-    #Call the function that will return the min value of H
+    # Zhang optimization step (minimization of the distance from real coordinates in image plan and the ones found by the corner detector)
+    # generating starting points
+    np.random.seed(1)
+    starting_points = generate_starting_points(np.random.rand(DIM)*MUL, 500)
+    #for point in starting_points:
+    #    print(point)
+    # best_homography is a tuple
+    best_homography = nelder_mead_optimizer(loss_function,m,w,starting_points)
     #Function that prints the points of the image and the projection error refering to the optimal H
-    #TODO:-starting points
-    #TODO:-call the nelder_mead function
-    #TODO:-output
+    m = m[:,:2]
+    w = np.reshape(best_homography[1],(3,3)) @ w.T
+    w = w.T[:,:2]
+    print_correspondences(img,best_homography[1],best_homography[0],m,w)
+    print("Time: {}".format(time.time() - start))
 
 
 
