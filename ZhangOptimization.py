@@ -124,11 +124,16 @@ def expansion(reflection,centroid,coeff,loss_function,m,w):
 
     return (expansion_value,expansion_point)
 
-def contraction(worst,centroid,coeff,loss_function,m,w):
-    contraction_point = centroid[1] * (1-coeff) + coeff*worst[1]
-    # contraction_value = loss_function(contraction_point)
+def outer_contraction(reflection,centroid,coeff,loss_function,m,w):
+    contraction_point = centroid[1] + coeff * (reflection[1] - centroid[1])
     contraction_value = loss_function(m, np.reshape(contraction_point,(3,3)), w)
-    
+    # contraction_value = loss_function(contraction_point)
+    return (contraction_value,contraction_point)
+
+def inner_contraction(worst,centroid,coeff,loss_function,m,w):
+    contraction_point = centroid[1] * (1-coeff) + coeff*worst[1]
+    contraction_value = loss_function(m, np.reshape(contraction_point,(3,3)), w)
+    # contraction_value = loss_function(contraction_point)
     return (contraction_value,contraction_point)
 
 def shrink(simplex,coeff,loss_function,m,w):
@@ -186,7 +191,7 @@ def nelder_mead_optimizer(loss_function, m, w, start ,max_it = 10000, toll = 10e
         if(reflection_tuple[0] >= best_tuple[0] and reflection_tuple[0] < second_worst_tuple[0]):
             #accept the reflection and impose the worst equal to the reflection_tuple
             simplex_list[-1] = reflection_tuple
-            print("reflection")
+            #print("reflection")
         if(reflection_tuple[0] < best_tuple[0]):
             #Expansion
             expansion_tuple = expansion(reflection_tuple,centroid_tuple,exp_coeff,loss_function,m,w)
@@ -194,25 +199,29 @@ def nelder_mead_optimizer(loss_function, m, w, start ,max_it = 10000, toll = 10e
             if(expansion_tuple[0] < best_tuple[0]):
                 #accept the expansion and impose the worst equal to the refletion_tuple
                 simplex_list[-1] = expansion_tuple
-                print("expansion")
+                #print("expansion")
             else:
                 #accept the reflection and impose the worst equal to the reflection_tuple
                 simplex_list[-1] = reflection_tuple
-                print("reflection")
+                #print("reflection")
         #and reflection_tuple[0] >= second_worst_tuple[0]):
 
-        if(reflection_tuple[0] >= second_worst_tuple[0]):   
-            #Contraction
-            contraction_tuple = contraction(worst_tuple,centroid_tuple,contract_coeff,loss_function,m,w)
-            #Contraction evaluation
-            if(contraction_tuple[0] <= worst_tuple[0]):
-                #accept the contraction and impose the worst equal to the contraction_tuple
-                simplex_list[-1] = contraction_tuple
-                print("contraction")
+        # contraction conditions (inner and outer)
+        if(reflection_tuple[0] >= second_worst_tuple[0]):
+            # Outer contraction
+            if (reflection_tuple[0] >= second_worst_tuple[0] and reflection_tuple[0] < worst_tuple[0]):
+                out_contraction_tuple = outer_contraction(reflection_tuple,centroid_tuple,contract_coeff,loss_function,m,w)
+                if out_contraction_tuple[0] <= reflection_tuple[0]:
+                    simplex_list[-1] = out_contraction_tuple
+                else:
+                    simplex_list = shrink(simplex_list,shrink_coeff,loss_function,m,w)
+            # Inner contraction
             else:
-                #Shrink and update the simplex_list
-                simplex_list = shrink(simplex_list,shrink_coeff,loss_function,m,w)
-                print("shrink")
+                in_contraction_tuple = inner_contraction(worst_tuple,centroid_tuple,contract_coeff,loss_function,m,w)
+                if in_contraction_tuple[0] < worst_tuple[0]:
+                    simplex_list[-1] = in_contraction_tuple
+                else:
+                    simplex_list = shrink(simplex_list,shrink_coeff,loss_function,m,w)
 
     return simplex_list[0]
 
@@ -230,8 +239,8 @@ if __name__ == '__main__':
     m , w = process_corners(img)
     # Zhang optimization step (minimization of the distance from real coordinates in image plan and the ones found by the corner detector)
     # generating starting points
-    np.random.seed(1)
-    starting_points = generate_starting_points(np.random.rand(DIM)*MUL, 500)
+    np.random.seed(50)
+    starting_points = generate_starting_points(np.random.rand(DIM)*MUL, 50)
     #for point in starting_points:
     #    print(point)
     # best_homography is a tuple
@@ -241,10 +250,4 @@ if __name__ == '__main__':
     w = np.reshape(best_homography[1],(3,3)) @ w.T
     w = w.T[:,:2]
     print_correspondences(img,best_homography[1],best_homography[0],m,w)
-    print("Time: {}".format(time.time() - start))
-
-
-
-
-
-    
+    print("Time: {}".format(time.time() - start)) 
