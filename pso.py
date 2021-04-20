@@ -33,7 +33,7 @@ def random_inizialization(f, m, w, bounds, num_par):
 
     for j in range(num_par):
         # starting points for particles
-        particle_pos[j] = [np.rand.uniform(bounds[i][0],bounds[i][1]) for i in range(dim)]
+        particle_pos[j] = [np.random.uniform(bounds[i][0],bounds[i][1]) for i in range(dim)]
         # computing the fitness function
         particle_val[j] = f(m, np.reshape(particle_pos[j], (3,3)), w)
         # velocity for each particle
@@ -43,23 +43,21 @@ def random_inizialization(f, m, w, bounds, num_par):
     # best global position
     swarm_best = particle_pos[np.argmin(particle_val)]
 
-    return dim, np.array(particle_pos), np.array(particle_val), np.array(particle_velocity),
-    np.array(particle_best), np.array(swarm_best), 
+    return dim, np.array(particle_pos), np.array(particle_val), np.array(particle_velocity), np.array(particle_best), np.array(swarm_best)
         
 def particle_swarm_optimization(loss, m, w, bounds, omega, phi_p, phi_g, num_par, tol = 1e-10):
 
     # getting initial particles and other related data
-    dim, particle_pos, particle_val, \
-    particle_velocity, particle_best, swarm_best = random_inizialization(loss, m, w, bounds, num_par)
+    dim, particle_pos, particle_val, particle_velocity, particle_best, swarm_best = random_inizialization(loss, m, w, bounds, num_par)
 
     # last best global point
-    old_swarm = np.zeros(num_par)
+    old_swarm = np.zeros(dim)
 
-    while abs(loss(m, np.reshape(old_swarm, (3,3), w)) - loss(m, np.reshape(swarm_best, (3,3), w))) > tol:
+    while abs(loss(m, np.reshape(old_swarm, (3,3)), w) - loss(m, np.reshape(swarm_best, (3,3)), w)) > tol:
         for i in range(num_par):
             r_p, r_g = np.random.uniform(0,1,2)
             particle_velocity[i,:] += (phi_p * r_p * (particle_best[i,:] - particle_pos[i,:]))
-            particle_velocity[i,:] += (phi_g * r_g * (particle_best[i,:] - particle_pos[i,:]))
+            particle_velocity[i,:] += (phi_g * r_g * (swarm_best[i,:] - particle_pos[i,:]))
             particle_velocity[i,:] = particle_velocity[i,:] * omega
             #if particle_velocity[i].any() > vmax : #is any velocity is greater than vmax
                     #particle_velocity[i,:]=vmax #set velocity to vmax
