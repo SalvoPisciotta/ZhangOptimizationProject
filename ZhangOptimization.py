@@ -145,7 +145,7 @@ def shrink(simplex,coeff,loss_function,m,w):
     return simplex
 
 
-def nelder_mead_optimizer(loss_function, m, w, start ,max_it = 10000, toll = 10e-6, reflect_coeff = 1.0, exp_coeff = 2.0, contract_coeff = 0.5, shrink_coeff = 0.5):
+def nelder_mead_optimizer(loss_function, m, w, start ,max_it = 10010, toll = 10e-6, reflect_coeff = 1.0, exp_coeff = 2.0, contract_coeff = 0.5, shrink_coeff = 0.5):
     #Create list of tuples (loss function value, vertex)
     simplex_list = []
     for i in range(len(start)):
@@ -240,7 +240,7 @@ if __name__ == '__main__':
     # Zhang optimization step (minimization of the distance from real coordinates in image plan and the ones found by the corner detector)
     # generating starting points
     np.random.seed(50)
-    starting_points = generate_starting_points(np.random.rand(DIM)*MUL, 50)
+    starting_points = generate_starting_points(np.ones(DIM), 0.5)
     #for point in starting_points:
     #    print(point)
     # best_homography is a tuple

@@ -31,7 +31,7 @@ def acceptance_probability(value, new_value, temperature):
         # we accept non-improvement value with a certain probability
         return p
 
-def simulated_annealing(start, loss_function, m, w, low, upper, max_iter=1000,):
+def simulated_annealing(start, loss_function, m, w, low, upper, max_iter=300000):
     "start is a np array, random_neighbour, acceptance and temperature are functions"
     # number of dimensions
     dim = start.shape[0]
@@ -39,6 +39,7 @@ def simulated_annealing(start, loss_function, m, w, low, upper, max_iter=1000,):
     point = start
     value = loss_function(m, np.reshape(point,(3,3)), w)
     for step in range(max_iter):
+        print("Step {}".format(step))
         fraction = step / float(max_iter)
         t = temperature(fraction)
         neighbour = random_neighbour(point, low, upper, fraction)
@@ -62,9 +63,8 @@ def main():
     # Zhang optimization step (minimization of the distance from real coordinates in image plan and the ones found by the corner detector)
     # generating starting points
     np.random.seed(50)
-    starting_point = random_start(LOW, UPPER, DIM)
-    #for point in starting_points:
-    #    print(point)
+    #starting_point = random_start(LOW, UPPER, DIM)
+    starting_point = np.array([1.45, -9.56, 2e+3, 10., 1., 842., 1e-8, 3e-8, 10e-1])
     # best_homography is a tuple
     best_homography = simulated_annealing(starting_point, zo.loss_function, m, w, LOW, UPPER)
     #Function that prints the points of the image and the projection error refering to the optimal H
