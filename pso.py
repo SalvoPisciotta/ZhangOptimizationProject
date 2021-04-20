@@ -46,7 +46,7 @@ def random_inizialization(f, m, w, bounds, num_par):
     return dim, np.array(particle_pos), np.array(particle_val), np.array(particle_velocity),
     np.array(particle_best), np.array(swarm_best), 
         
-def particle_swarm_optimization(loss, m, w, bounds, omega, phi_p, phi_g, num_par = 10, tol = 1e-10):
+def particle_swarm_optimization(loss, m, w, bounds, omega, phi_p, phi_g, num_par, tol = 1e-10):
 
     # getting initial particles and other related data
     dim, particle_pos, particle_val, \
@@ -94,7 +94,12 @@ if __name__ == '__main__':
     bounds = []
     for i in range(DIM):
         bounds.append([0,100])
-    best_homography = particle_swarm_optimization(zo.loss, m, w, bounds, omega, phi_p, phi_g)
+    # parameters have been get consulting a scientific paper
+    omega = -0.3488
+    phi_p = -0.2746
+    phi_g = 4.8976
+    num_par = 53
+    best_homography = particle_swarm_optimization(zo.loss_function, m, w, bounds, omega, phi_p, phi_g, num_par)
     #Function that prints the points of the image and the projection error refering to the optimal H
     m = m[:,:2]
     w = np.reshape(best_homography[1],(3,3)) @ w.T
