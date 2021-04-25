@@ -2,7 +2,7 @@ import numpy as np
 import time
 import ZhangOptimization as zo
         
-def particle_swarm_optimization(loss, m, w, bounds, c1, c2, num_par, vmax, tol = 1e-13, max_iter = 10000):
+def particle_swarm_optimization(loss, m, w, bounds, c1, c2, num_par, vmax, tol = 1e-13, max_iter = 20000):
 
     # getting initial particles and other related data
     dim, particle_pos, particle_val, particle_velocity, particle_best, swarm_best, local_best = random_inizialization(loss, m, w, bounds, num_par)
@@ -18,9 +18,10 @@ def particle_swarm_optimization(loss, m, w, bounds, c1, c2, num_par, vmax, tol =
 
         iter += 1
         print("Step {}".format(iter))
-        time.sleep(0.100)
+        # time.sleep(0.100)
 
         for i in range(num_par):
+            np.random.seed(50)
             eps_1, eps_2 = np.random.uniform(0,1,2)
             particle_velocity[i,:] += (c1*eps_1*(particle_best[i,:]-particle_pos[i,:]))
             particle_velocity[i,:] += (c2*eps_2*(local_best[i,:]-particle_pos[i,:]))
@@ -68,7 +69,7 @@ def random_inizialization(f, m, w, bounds, num_par):
     particle_velocity = particle_pos[:]
     # current value of the particle
     particle_val = particle_pos[:]
-
+    np.random.seed(50)
     for j in range(num_par):
         # starting points for particles
         particle_pos[j] = [np.random.uniform(bounds[i][0],bounds[i][1]) for i in range(dim)]
@@ -109,8 +110,6 @@ if __name__ == '__main__':
     # Get m and w that represent respectively the image coordinates and the world coordinates already trasformed from R to P
     # It takes about 1 minute
     m , w = zo.process_corners(img)
-    m = m[:8,:]
-    w = w[:8,:]
     # Zhang optimization step (minimization of the distance from real coordinates in image plan and the ones found by the corner detector)
     # generating bounds for initial point
     dimension_bounds = [0,1000]
