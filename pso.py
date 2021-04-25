@@ -18,7 +18,7 @@ def particle_swarm_optimization(loss, m, w, bounds, c1, c2, num_par, vmax, tol =
 
         iter += 1
         print("Step {}".format(iter))
-        time.sleep(0.300)
+        time.sleep(0.100)
 
         for i in range(num_par):
             eps_1, eps_2 = np.random.uniform(0,1,2)
@@ -36,9 +36,10 @@ def particle_swarm_optimization(loss, m, w, bounds, c1, c2, num_par, vmax, tol =
             # model implementation
             if particle_fitness < particle_val[i]:
                 particle_best[i,:] = particle_pos[i,:]
-                partcle_val[i] = particle_fitness
+                particle_val[i] = particle_fitness
                 f_swarm_best = loss(m, np.reshape(swarm_best, (3,3)), w)
-                if particle_fitness < f_swarm_best: 
+                if particle_fitness < f_swarm_best:
+                    print("New swarm best found")
                     old_swarm_best = swarm_best[:]
                     swarm_best = particle_best[i,:].copy()
             
