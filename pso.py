@@ -128,9 +128,9 @@ if __name__ == '__main__':
     # computing vmax
     vmax = (dimension_bounds[1]-dimension_bounds[0])*0.75
     # parameters have been get consulting a scientific paper
-    c1 = -0.2746
-    c2 = 4.8976
-    num_par = 53
+    c1 = 2.8
+    c2 = 1.3
+    num_par = 60
     best_homography = particle_swarm_optimization(zo.loss_function, m, w, bounds, c1, c2, num_par, vmax)
     #Function that prints the points of the image and the projection error refering to the optimal H
     m = m[:,:2]
