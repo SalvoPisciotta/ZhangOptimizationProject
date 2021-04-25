@@ -264,8 +264,8 @@ if __name__ == '__main__':
     # Get m and w that represent respectively the image coordinates and the world coordinates already trasformed from R to P
     # It takes about 1 minute
     m , w = process_corners(img)
-    m = m[:8,:]
-    w = w[:8,:]
+    m = m[:,:]
+    w = w[:,:]
     # Zhang optimization step (minimization of the distance from real coordinates in image plan and the ones found by the corner detector)
     # generating starting points
     starting_points = generate_starting_points(np.ones(DIM), TAU)
