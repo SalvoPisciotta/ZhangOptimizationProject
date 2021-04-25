@@ -4,6 +4,7 @@ import ZhangOptimization as zo
         
 def particle_swarm_optimization(loss, m, w, bounds, c1, c2, num_par, vmax, tol = 1e-13, max_iter = 20000):
 
+    np.random.seed(50)
     # getting initial particles and other related data
     dim, particle_pos, particle_val, particle_velocity, particle_best, swarm_best, local_best = random_inizialization(loss, m, w, bounds, num_par)
     # last best swarm position
@@ -13,15 +14,23 @@ def particle_swarm_optimization(loss, m, w, bounds, c1, c2, num_par, vmax, tol =
     chi = 2/(abs(2-phi-np.sqrt((phi**2)-(4*phi))))
     # number of iterations
     iter = 0
-
+    # number of iteration for creating a conflict in the swarm
+    count = 0
     while abs(loss(m, np.reshape(old_swarm, (3,3)), w) - loss(m, np.reshape(swarm_best, (3,3)), w)) > tol and iter < max_iter:
 
         iter += 1
         print("Step {}".format(iter))
         # time.sleep(0.100)
 
+        count += 1 
+        # conflict in the swarm
+        if count >1000:
+            print('Particles are too friendly! Creating conflict...')
+            for j in range(num_par):
+                particle_velocity[j,:] = [np.random.uniform(-abs(bounds[i][1]-bounds[i][0]),abs(bounds[i][1]-bounds[i][0])) for i in range(dim)]
+            count=0 #reset iteration count
+
         for i in range(num_par):
-            np.random.seed(50)
             eps_1, eps_2 = np.random.uniform(0,1,2)
             particle_velocity[i,:] += (c1*eps_1*(particle_best[i,:]-particle_pos[i,:]))
             particle_velocity[i,:] += (c2*eps_2*(local_best[i,:]-particle_pos[i,:]))
