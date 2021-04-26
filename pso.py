@@ -2,7 +2,7 @@ import numpy as np
 import time
 import ZhangOptimization as zo
         
-def particle_swarm_optimization(loss, m, w, bounds, c1, c2, num_par, vmax, tol = 1e-13, max_iter = 20000):
+def particle_swarm_optimization(loss, m, w, bounds, c1, c2, num_par, vmax, tol = 1e-3, max_iter = 10000):
 
     np.random.seed(50)
     # getting initial particles and other related data
@@ -19,13 +19,12 @@ def particle_swarm_optimization(loss, m, w, bounds, c1, c2, num_par, vmax, tol =
     while abs(loss(m, np.reshape(old_swarm, (3,3)), w) - loss(m, np.reshape(swarm_best, (3,3)), w)) > tol and iter < max_iter:
 
         iter += 1
-        print("Step {}".format(iter))
+        #print("Step {}".format(iter))
         # time.sleep(0.100)
 
         count += 1 
         # conflict in the swarm
-        if count >1000:
-            print('Particles are too friendly! Creating conflict...')
+        if count > 1000:
             for j in range(num_par):
                 particle_velocity[j,:] = [np.random.uniform(-abs(bounds[i][1]-bounds[i][0]),abs(bounds[i][1]-bounds[i][0])) for i in range(dim)]
             count=0 #reset iteration count
@@ -43,26 +42,18 @@ def particle_swarm_optimization(loss, m, w, bounds, c1, c2, num_par, vmax, tol =
 
             particle_fitness = loss(m, np.reshape(particle_pos[i,:], (3,3)), w)
         
-            # model implementation
+            # checking global and local best
             if particle_fitness < particle_val[i]:
                 particle_best[i,:] = particle_pos[i,:]
                 particle_val[i] = particle_fitness
                 f_swarm_best = loss(m, np.reshape(swarm_best, (3,3)), w)
                 if particle_fitness < f_swarm_best:
-                    print("New swarm best found")
+                    #print("New swarm best found")
                     old_swarm_best = swarm_best[:]
                     swarm_best = particle_best[i,:].copy()
             
             local_best = get_local_best(particle_pos, particle_val, num_par)
 
-            # my implementation
-            '''particle_val[i] = loss(m, np.reshape(particle_pos[i,:], (3,3)), w)
-            # the value of the new position is better than the current best value for this particle
-            if particle_val[i] < loss(m, np.reshape(particle_best[i], (3,3)), w):
-                particle_best[i,:] = particle_pos[i,:]
-                if particle_val[i] < loss(m, np.reshape(swarm_best, (3,3)), w):
-                    old_swarm = swarm_best
-                    swarm_best = particle_pos[i,:]'''
 
     return (loss(m, np.reshape(swarm_best, (3,3)), w), swarm_best)
 
@@ -121,7 +112,7 @@ if __name__ == '__main__':
     m , w = zo.process_corners(img)
     # Zhang optimization step (minimization of the distance from real coordinates in image plan and the ones found by the corner detector)
     # generating bounds for initial point
-    dimension_bounds = [0,1000]
+    dimension_bounds = [-1000000,1000000]
     bounds = []
     for i in range(DIM):
         bounds.append(dimension_bounds)
@@ -136,5 +127,6 @@ if __name__ == '__main__':
     m = m[:,:2]
     w = np.reshape(best_homography[1],(3,3)) @ w.T
     w = w.T[:,:2]
+    print("Time: {}".format(time.time() - start))
     zo.print_correspondences(img,best_homography[1],best_homography[0],m,w)
-    print("Time: {}".format(time.time() - start)) 
+    

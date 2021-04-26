@@ -145,7 +145,7 @@ def shrink(simplex,coeff,loss_function,m,w):
     return simplex
 
 
-def nelder_mead_optimizer(loss_function, m, w, start ,max_it = 1e+10, max_fun_eval = 1e+10, toll_fun = 1e-4, toll_x = 1e-4):
+def nelder_mead_optimizer(loss_function, m, w, start ,max_it = 1e+10, max_fun_eval = 1e+10, toll_fun = 1e-6, toll_x = 1e-6):
     # getting number of dimension
     num = start[0].shape[0]
     # Adapting coefficients to the number of dimension
@@ -274,5 +274,6 @@ if __name__ == '__main__':
     m = m[:,:2]
     w = np.reshape(best_homography[1],(3,3)) @ w.T
     w = w.T[:,:2]
+    print("Time: {}".format(time.time() - start))
     print_correspondences(img,best_homography[1],best_homography[0],m,w)
-    print("Time: {}".format(time.time() - start)) 
+     
