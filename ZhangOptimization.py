@@ -22,6 +22,19 @@ def print_correspondences(image_dir, optima, value, first_list, second_list):
     plt.legend(loc='upper right')
     plt.show()
 
+def print_loss(plot_list):
+    '''
+    plot_list:
+    '''
+    plt.title("Starting loss value : {} at iterate: {} \n".format(plot_list[0][1],plot_list[0][0])
+              +"Final loss value : {} at iterate: {}".format(plot_list[-1][1],plot_list[-1][0])
+              +"\n")
+    plt.xlabel('Iteration')
+    plt.ylabel('Loss function value')
+    plt.plot(*zip(*plot_list))
+    plt.show()
+    plt.show()
+
 
 def process_corners(dir):
   #Load the image in greyscale color from the given directory path
@@ -166,22 +179,24 @@ def nelder_mead_optimizer(loss_function, m, w, start ,max_it = 1e+10, max_fun_ev
     best_tuple = (0, np.zeros(simplex_list[0][1].shape[0]))
     worst_tuple = (toll_fun + 1, np.zeros(simplex_list[0][1].shape[0]))
     # Salient values at each iterate
-    flag = False
+    plot_counter = False
+    plot_list = []
+
 
     while ((worst_tuple[0]-best_tuple[0] > toll_fun or np.linalg.norm(worst_tuple[1]-best_tuple[1],np.inf) > toll_x)
             and counter_it <= max_it and counter_fun_eval <= max_fun_eval):
-        counter_it += 1
+        
         #Sorting wrt the loss_function value of vertices and assign the best/worst vertex to respectevely variables
         simplex_list = sorted(simplex_list, key= lambda pair: pair[0])
         best_tuple = simplex_list[0]
         second_worst_tuple = simplex_list[-2]
         worst_tuple = simplex_list[-1]
 
-        # Print first and last iterate
-        if (counter_it == 1 or counter_it == max_it):
+        # Print first and multiple of 500 iterates
+        if (counter_it == 1 or counter_it % 500 == 0):
             flag = True
         else:
-            flag = True
+            flag = False
 
         #Find the centroid of the simplex
         centroid_tuple = centroid_calculation(simplex_list, loss_function, m, w)
@@ -198,6 +213,9 @@ def nelder_mead_optimizer(loss_function, m, w, start ,max_it = 1e+10, max_fun_ev
             print("Worst value = {} at iteration = {}".format(worst_tuple[0],counter_it))
             print("Second worst value = {} at iteration = {}".format(second_worst_tuple[0],counter_it))
             print("--------------------------------------------------")
+        
+        plot_list.append(( counter_it, best_tuple[0]))
+
 
         #Reflection evaluation 
         if(reflection_tuple[0] >= best_tuple[0] and reflection_tuple[0] < second_worst_tuple[0]):
@@ -245,12 +263,16 @@ def nelder_mead_optimizer(loss_function, m, w, start ,max_it = 1e+10, max_fun_ev
                 else:
                     simplex_list = shrink(simplex_list,shrink_coeff,loss_function,m,w)
                     counter_fun_eval += best_tuple[1].shape[0] - 1
-
+        counter_it += 1
+        
+    print("EXIT CONDITION:\n")
     print("Toll_fun: {}".format(worst_tuple[0]-best_tuple[0] > toll_fun))
     print("Toll x: {}".format(np.linalg.norm(worst_tuple[1]-best_tuple[1],np.inf) > toll_x))
     print("Num iterations: {}".format(counter_it <= max_it))
     print("Num fun evaluations: {}".format(counter_fun_eval <= max_fun_eval))
-    return simplex_list[0]
+    print("Loss function value: {}".format(best_tuple[0]))
+    print("Iterations: {}".format(counter_it-1))
+    return simplex_list[0],plot_list
 
 #Main
 if __name__ == '__main__':
@@ -269,11 +291,13 @@ if __name__ == '__main__':
     # Zhang optimization step (minimization of the distance from real coordinates in image plan and the ones found by the corner detector)
     # generating starting points
     starting_points = generate_starting_points(np.ones(DIM), TAU)
-    best_homography = nelder_mead_optimizer(loss_function,m,w,starting_points)
+    best_homography , record = nelder_mead_optimizer(loss_function,m,w,starting_points)
     #Function that prints the points of the image and the projection error refering to the optimal H
     m = m[:,:2]
     w = np.reshape(best_homography[1],(3,3)) @ w.T
     w = w.T[:,:2]
     print("Time: {}".format(time.time() - start))
+
+    print_loss(record)
     print_correspondences(img,best_homography[1],best_homography[0],m,w)
      
