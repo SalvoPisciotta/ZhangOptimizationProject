@@ -22,17 +22,17 @@ def print_correspondences(image_dir, optima, value, first_list, second_list):
     plt.legend(loc='upper right')
     plt.show()
 
-def print_loss(plot_list):
+def print_loss(plot_list,comp_time):
     '''
     plot_list:
     '''
     plt.title("Starting loss value : {} at iterate: {} \n".format(plot_list[0][1],plot_list[0][0])
               +"Final loss value : {} at iterate: {}".format(plot_list[-1][1],plot_list[-1][0])
+              +"Computation time: {}".format(comp_time)
               +"\n")
     plt.xlabel('Iteration')
     plt.ylabel('Loss function value')
     plt.plot(*zip(*plot_list))
-    plt.show()
     plt.show()
 
 
@@ -264,7 +264,7 @@ def nelder_mead_optimizer(loss_function, m, w, start ,max_it = 1e+10, max_fun_ev
                     simplex_list = shrink(simplex_list,shrink_coeff,loss_function,m,w)
                     counter_fun_eval += best_tuple[1].shape[0] - 1
         counter_it += 1
-        
+
     print("EXIT CONDITION:\n")
     print("Toll_fun: {}".format(worst_tuple[0]-best_tuple[0] > toll_fun))
     print("Toll x: {}".format(np.linalg.norm(worst_tuple[1]-best_tuple[1],np.inf) > toll_x))
@@ -296,8 +296,9 @@ if __name__ == '__main__':
     m = m[:,:2]
     w = np.reshape(best_homography[1],(3,3)) @ w.T
     w = w.T[:,:2]
-    print("Time: {}".format(time.time() - start))
+    computation_time = time.time() - start
+    print("Time: {}".format(computation_time))
 
-    print_loss(record)
+    print_loss(record,computation_time)
     print_correspondences(img,best_homography[1],best_homography[0],m,w)
      
