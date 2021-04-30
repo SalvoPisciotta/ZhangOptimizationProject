@@ -4,6 +4,7 @@ import ZhangOptimization as zo
         
 def particle_swarm_optimization(loss, m, w, bounds, c1, c2, num_par, vmax, tol = 1e-3, max_iter = 10000):
 
+    print("Starting PSO")
     np.random.seed(50)
     # getting initial particles and other related data
     dim, particle_pos, particle_val, particle_velocity, particle_best, swarm_best, local_best = random_inizialization(loss, m, w, bounds, num_par)
@@ -110,6 +111,8 @@ if __name__ == '__main__':
     # Get m and w that represent respectively the image coordinates and the world coordinates already trasformed from R to P
     # It takes about 1 minute
     m , w = zo.process_corners(img)
+    m = m[:15,:]
+    w = w[:15,:]
     # Zhang optimization step (minimization of the distance from real coordinates in image plan and the ones found by the corner detector)
     # generating bounds for initial point
     dimension_bounds = [-1000000,1000000]
