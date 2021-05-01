@@ -7,7 +7,7 @@ The Zhang's method is used to understand which are the camera parameters allowin
 
 ## Nelder-Mead method
 
-<img align="left" heigth="350" width="350" src="https://rodolfoferro.files.wordpress.com/2017/02/gif1.gif">
+<img align="left" heigth="340" width="340" src="https://rodolfoferro.files.wordpress.com/2017/02/gif1.gif">
 
 The method uses the concept of a simplex, which is a special polytope of n + 1 vertices in n dimensions. Examples of simplices include a line segment on a line, a triangle on a plane, a tetrahedron in three-dimensional space and so forth.
 
@@ -18,6 +18,9 @@ In this implementation has been used an adaptive Nelder-Mead method algorithm (A
 
 
 ## Particle Swarm Optimization (PSO) method
+
+<img align="right" heigth="340" width="340" src="https://upload.wikimedia.org/wikipedia/commons/e/ec/ParticleSwarmArrowsAnimation.gif">
+
 Different points are placed in the search space (particles) and each particle is updated considering the best position found by the swarm and found by itself.
 In this implementation a local topology has been used to avoid a too fast convergence. Moreover a sort of correlation breaking has been implemented each 1000 iterations to improve the search and avoiding a stuck in a local minimum position.
 
