@@ -50,7 +50,7 @@ git clone https://github.com/SalvoPisciotta/ZhangOptimizationProject.git
 cd ZhangOptimizationProject
 ```
 
-### Run
+### Execute
 From the project directory
 ```console
 python main.py
