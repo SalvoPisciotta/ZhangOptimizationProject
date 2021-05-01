@@ -1,4 +1,7 @@
 # ZhangOptimizationProject
+
+This is a project for the second module of Combinatorial Decision Making and Optimization of the degree coutse of Artificial Intelligence at Alma Mater Studiorum (Bologna)
+
 ## Description
 The purpose of the project is to minimize the reprojection error of the Zhang's method using two different optimization methods.
 The Zhang's method is used to understand which are the camera parameters allowing to correlate image points with real points. Optimization methods used in the project to solve the first step of Zhang's methods are the followings:
@@ -24,7 +27,10 @@ In this implementation has been used an adaptive Nelder-Mead method algorithm (A
 <img align="right" heigth="340" width="340" src="https://upload.wikimedia.org/wikipedia/commons/e/ec/ParticleSwarmArrowsAnimation.gif">
 
 Different points are placed in the search space (particles) and each particle is updated considering the best position found by the swarm and found by itself.
-In this implementation a local topology has been used to avoid a too fast convergence. Moreover a sort of correlation breaking has been implemented each 1000 iterations to improve the search and avoiding a stuck in a local minimum position.
+
+In this implementation a local topology has been used to avoid a too fast convergence.
+
+Moreover a sort of correlation breaking has been implemented each 1000 iterations to improve the search and avoiding a stuck in a local minimum position.
 
 
 ## Requirements
