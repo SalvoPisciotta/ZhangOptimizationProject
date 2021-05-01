@@ -29,6 +29,7 @@ You need to have a Python version < 3.7 and installed the following libraries:
 Clone the repository
 ```console
 git clone https://github.com/SalvoPisciotta/ZhangOptimizationProject.git
+cd ZhangOptimizationProject
 ```
 
 ### Run
@@ -36,3 +37,10 @@ From the project directory
 ```console
 python main.py
 ```
+
+## Group Members
+
+|  Reg No.  |  Name     |  Surname  |     Email                              |    Username      |
+| :-------: | :-------: | :-------: | :------------------------------------: | :--------------: |
+|   985203  | Salvatore | Pisciotta | `salvatore.pisciotta2@studio.unibo.it` | [_SalvoPisciotta_](https://github.com/SalvoPisciotta) |
+|  1005271  | Giuseppe  | Boezio    | `giuseppe.boezio@studio.unibo.it`      | [_giuseppeboezio_](https://github.com/giuseppeboezio) |
