@@ -1,14 +1,19 @@
 # ZhangOptimizationProject
-The purpose of the project is to minimize the reprojection error of the Zhang's method using the Nelder Mead method.
+# Description
+The purpose of the project is to minimize the reprojection error of the Zhang's method using two different optimization methods.
+The Zhang's method is used to understand which are the camera parameters allowing to correlate image points with real points. Optimization methods used in the project to solve the first step of Zhang's methods are the followings:
+* Nelder-Mead
+* Particle Swarm Optimization
 
-## First Step
-Given an image with a planar pattern (e.g. a chessboard), corner points are extracted and knowing the real dimension of each square of the chessboard is possible to compute real world points.
+# Nelder-Mead method
+The method uses the concept of a simplex, which is a special polytope of n + 1 vertices in n dimensions. Examples of simplices include a line segment on a line, a triangle on a plane, a tetrahedron in three-dimensional space and so forth.
+The method approximates a local optimum of a problem with n variables when the objective function varies smoothly and is unimodal.
+In this implementation has been used an adaptive Nelder-Mead method algorithm (ANMA) which allows to change coefficients according to the number of dimensions
 
-<img align="center" src="https://automaticaddison.com/wp-content/uploads/2020/12/7_chessboard_input1_drawn_corners.jpg" >
-                                                                                                        
+<img align="center" src="https://rodolfoferro.files.wordpress.com/2017/02/gif1.gif">
 
-## Second Step
-Nelder Mead method is applied to minimize the reprojection error i.e. the sum of the square distances between the image points and the image points obtained using the homography matrix (this matrix is used to realize a change of coordinates between image reference system and world reference system).
+# Particle Swarm Optimization (PSO) method
+Different points are placed in the search space (particles) and each particle is updated considering the best position found by the swarm and found by itself.
+In this implementation a local topology has been used to avoid a too fast convergence. Moreover a sort of correlation breaking has been implemented each 1000 iterations to improve the search and avoiding a stuck in a local minimum position.
 
-<img align="center" src="https://rodolfoferro.files.wordpress.com/2017/02/gif1.gif" >
-
+<img align="center" src="https://miro.medium.com/max/2400/1*hpnzy5dNYtp1qC1MsN9cGQ.gif">                                                                                                     
