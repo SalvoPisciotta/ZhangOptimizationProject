@@ -25,13 +25,13 @@ You need to have a Python version < 3.7 and installed the following libraries:
 * Matplotlib
 
 ## Run
-# Install
+### Install
 Clone the repository
 ```console
 git clone https://github.com/SalvoPisciotta/ZhangOptimizationProject.git
 ```
 
-# Run
+### Run
 From the project directory
 ```console
 python main.py
