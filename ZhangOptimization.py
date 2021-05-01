@@ -22,18 +22,27 @@ def print_correspondences(image_dir, optima, value, first_list, second_list):
     plt.legend(loc='upper right')
     plt.show()
 
-def print_loss(plot_list,comp_time):
+def print_loss(plot_list,comp_record,comp_time):
     '''
     plot_list:
-    '''
+    
     plt.title("Starting loss value : {} at iterate: {} \n".format(plot_list[0][1],plot_list[0][0])
-              +"Final loss value : {} at iterate: {}".format(plot_list[-1][1],plot_list[-1][0])
-              +"Computation time: {}".format(comp_time)
-              +"\n")
+             +"Final loss value : {} at iterate: {}".format(plot_list[-1][1],plot_list[-1][0])
+             +"\nComputation time: {}".format(comp_time)
+             +"\n")
+    
     plt.xlabel('Iteration')
     plt.ylabel('Loss function value')
     plt.plot(*zip(*plot_list))
     plt.show()
+    '''
+    fig, axs = plt.subplots(9)
+    fig.suptitle('Vertically stacked subplots')
+    for i in range(7):
+        axs[i].plot(*zip(*plot_list[i]))
+    axs[8].plot(*zip(*comparison_record))
+    plt.show()
+
 
 
 def process_corners(dir):
@@ -282,23 +291,31 @@ if __name__ == '__main__':
     # Tau displacement
     TAU = 50
     # Set the name of the image file
-    img = 'Chessboard.jpg'
-    # Get m and w that represent respectively the image coordinates and the world coordinates already trasformed from R to P
-    # It takes about 1 minute
-    m , w = process_corners(img)
-    m = m[:,:]
-    w = w[:,:]
-    # Zhang optimization step (minimization of the distance from real coordinates in image plan and the ones found by the corner detector)
-    # generating starting points
-    starting_points = generate_starting_points(np.ones(DIM), TAU)
-    best_homography , record = nelder_mead_optimizer(loss_function,m,w,starting_points)
-    #Function that prints the points of the image and the projection error refering to the optimal H
-    m = m[:,:2]
-    w = np.reshape(best_homography[1],(3,3)) @ w.T
-    w = w.T[:,:2]
-    computation_time = time.time() - start
+    dirname='Chessboards/Chessboard'
+    img_names=[dirname + str(i) + '.jpg' for i in range(7) ]
+    print(img_names)
+    comparison_record = []
+    list_plot_record = []
+    for img in img_names:
+        # Get m and w that represent respectively the image coordinates and the world coordinates already trasformed from R to P
+        # It takes about 1 minute
+        m , w = process_corners(img)
+        m = m[:,:]
+        w = w[:,:]
+        # Zhang optimization step (minimization of the distance from real coordinates in image plan and the ones found by the corner detector)
+        # generating starting points
+        starting_points = generate_starting_points(np.ones(DIM), TAU)
+        best_homography , record = nelder_mead_optimizer(loss_function,m,w,starting_points)
+        #Function that prints the points of the image and the projection error refering to the optimal H
+        m = m[:,:2]
+        w = np.reshape(best_homography[1],(3,3)) @ w.T
+        w = w.T[:,:2]
+        comparison_record.append((img ,record[-1][1]))
+        list_plot_record.append(record)
+    computation_time = time.time() - start 
+    #print_loss(comparison_record,computation_time)
     print("Time: {}".format(computation_time))
 
-    print_loss(record,computation_time)
-    print_correspondences(img,best_homography[1],best_homography[0],m,w)
+    print_loss(list_plot_record,comparison_record,computation_time)
+    #print_correspondences(img,best_homography[1],best_homography[0],m,w)
      
