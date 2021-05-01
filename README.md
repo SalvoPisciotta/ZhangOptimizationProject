@@ -17,6 +17,8 @@ In this implementation has been used an adaptive Nelder-Mead method algorithm (A
 
 
 
+
+
 ## Particle Swarm Optimization (PSO) method
 
 <img align="right" heigth="340" width="340" src="https://upload.wikimedia.org/wikipedia/commons/e/ec/ParticleSwarmArrowsAnimation.gif">
@@ -24,7 +26,6 @@ In this implementation has been used an adaptive Nelder-Mead method algorithm (A
 Different points are placed in the search space (particles) and each particle is updated considering the best position found by the swarm and found by itself.
 In this implementation a local topology has been used to avoid a too fast convergence. Moreover a sort of correlation breaking has been implemented each 1000 iterations to improve the search and avoiding a stuck in a local minimum position.
 
-<img align="center" src="https://upload.wikimedia.org/wikipedia/commons/e/ec/ParticleSwarmArrowsAnimation.gif">
 
 ## Requirements
 You need to have a Python version < 3.7 and installed the following libraries:
