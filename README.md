@@ -7,7 +7,7 @@ The Zhang's method is used to understand which are the camera parameters allowin
 
 ## Nelder-Mead method
 
-<img align="left" src="https://rodolfoferro.files.wordpress.com/2017/02/gif1.gif">
+<img align="left" heigth="280" width="280" src="https://rodolfoferro.files.wordpress.com/2017/02/gif1.gif">
 
 The method uses the concept of a simplex, which is a special polytope of n + 1 vertices in n dimensions. Examples of simplices include a line segment on a line, a triangle on a plane, a tetrahedron in three-dimensional space and so forth.
 The method approximates a local optimum of a problem with n variables when the objective function varies smoothly and is unimodal.
