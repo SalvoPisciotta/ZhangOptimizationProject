@@ -4,7 +4,8 @@ This is a project for the second module of Combinatorial Decision Making and Opt
 
 ## Description
 The purpose of the project is to minimize the reprojection error of the Zhang's method using two different optimization methods.
-The Zhang's method is used to understand which are the camera parameters which allow to correlate image points with real points. Optimization methods used in the project to solve the first step of Zhang's method are the followings:
+
+Zhang's method is used to understand which are the camera parameters which allow to correlate image points with real points. Optimization methods used in the project to solve the first step of Zhang's method are the followings:
 * Nelder-Mead
 * Particle Swarm Optimization
 
