@@ -16,4 +16,4 @@ In this implementation has been used an adaptive Nelder-Mead method algorithm (A
 Different points are placed in the search space (particles) and each particle is updated considering the best position found by the swarm and found by itself.
 In this implementation a local topology has been used to avoid a too fast convergence. Moreover a sort of correlation breaking has been implemented each 1000 iterations to improve the search and avoiding a stuck in a local minimum position.
 
-<img align="center" src="https://miro.medium.com/max/2400/1*hpnzy5dNYtp1qC1MsN9cGQ.gif" width=400 heigth=300>                                                                                                     
+<img align="center" src="https://miro.medium.com/max/2400/1*hpnzy5dNYtp1qC1MsN9cGQ.gif" width=300 heigth=200>                                                                                                     
