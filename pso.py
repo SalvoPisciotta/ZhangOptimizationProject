@@ -1,6 +1,6 @@
 import numpy as np
 import time
-import ZhangOptimization as zo
+import utils as ut
         
 def particle_swarm_optimization(loss, m, w, bounds, c1, c2, num_par, vmax, tol = 1e-3, max_iter = 10000):
 
@@ -102,15 +102,15 @@ def get_local_best(particle_pos, particle_val, num_par):
         local_best[j-1] = particle_pos[min_index+j-2][:]
     return np.array(local_best)
 
-if __name__ == '__main__':
+def main():
     start = time.time()
     # Number of dimension
     DIM = 9
     # Set the name of the image file
-    img = 'Chessboard.jpg'
+    img = 'Chessboards/Chessboard7.jpg'
     # Get m and w that represent respectively the image coordinates and the world coordinates already trasformed from R to P
     # It takes about 1 minute
-    m , w = zo.process_corners(img)
+    m , w = ut.process_corners(img)
     m = m[:15,:]
     w = w[:15,:]
     # Zhang optimization step (minimization of the distance from real coordinates in image plan and the ones found by the corner detector)
@@ -125,11 +125,11 @@ if __name__ == '__main__':
     c1 = 2.8
     c2 = 1.3
     num_par = 60
-    best_homography = particle_swarm_optimization(zo.loss_function, m, w, bounds, c1, c2, num_par, vmax)
+    best_homography = particle_swarm_optimization(ut.loss_function, m, w, bounds, c1, c2, num_par, vmax)
     #Function that prints the points of the image and the projection error refering to the optimal H
     m = m[:,:2]
     w = np.reshape(best_homography[1],(3,3)) @ w.T
     w = w.T[:,:2]
     print("Time: {}".format(time.time() - start))
-    zo.print_correspondences(img,best_homography[1],best_homography[0],m,w)
+    ut.print_correspondences(img,best_homography[1],best_homography[0],m,w)
     
