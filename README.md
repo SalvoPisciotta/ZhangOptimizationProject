@@ -61,3 +61,7 @@ python main.py
 | :-------: | :-------: | :-------: | :------------------------------------: | :--------------: |
 |   985203  | Salvatore | Pisciotta | `salvatore.pisciotta2@studio.unibo.it` | [_SalvoPisciotta_](https://github.com/SalvoPisciotta) |
 |  1005271  | Giuseppe  | Boezio    | `giuseppe.boezio@studio.unibo.it`      | [_giuseppeboezio_](https://github.com/giuseppeboezio) |
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
