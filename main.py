@@ -14,6 +14,7 @@ while(choice != 0):
     
     if(choice==1):
         nm.main()
+        print("----------------------------------")
         pso.main()
     elif(choice==2):
         nm.main()

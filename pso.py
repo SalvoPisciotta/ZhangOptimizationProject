@@ -130,7 +130,7 @@ def main():
     #number of dimension
     DIM = 9
     #set the name of the image file
-    img = 'Chessboards/Chessboard7.jpg'
+    img = 'Chessboards/Chessboard2.jpg'
     #get m and w that represent respectively the image coordinates and the world coordinates already trasformed from R to P
     m , w = ut.process_corners(img)
     m = m[:15,:]

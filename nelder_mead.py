@@ -11,18 +11,18 @@ def print_loss(iteration_results,final_results,n_chessboard):
 
     '''
     #plot of the descent of loss function for each chessboard
-    for i in range(3):
-        plt.plot(*zip(*iteration_results[i]),label = "Chessboard {}".format(i+5))
-    plt.title('Comparsion between the descent of the loss of every chessboard analized')
+    for i in range(n_chessboard):
+        plt.plot(*zip(*iteration_results[i]),label = "Chessboard {}".format(i))
+    plt.title('Comparsion between the descent of the loss of every analyzed chessboard')
     #plot settings
     plt.legend()
-    plt.xlabel('Number of iterates')
+    plt.xlabel('Number of iterations')
     plt.ylabel('Loss function')
     plt.show()
     plt.ylabel('Final value of loss function')
     plt.title('Final value of the loss for every chessboard')
     #plot of the final values of the loss function for each chessboard
-    plt.plot(*zip(*final_results),markersize=15,marker='o',linewidth=0)
+    plt.plot(*zip(*final_results),markersize=10,marker='x',linewidth=0, color='r')
     plt.tight_layout()
     plt.show()
 
@@ -258,7 +258,7 @@ def main():
     n_chessboard = 3
     #set the name of the image file
     dirname='Chessboards/Chessboard'
-    img_names=[dirname + str(i) + '.jpg' for i in range(5,8,1) ]
+    img_names=[dirname + str(i) + '.jpg' for i in range(n_chessboard) ]
     print("analizing: {}".format(img_names))
     final_results = []
     iteration_results = []
@@ -270,8 +270,9 @@ def main():
         #generating starting points
         starting_points = generate_starting_points(np.ones(DIM), TAU)
         best_homography , loss_values = nelder_mead_optimizer(ut.loss_function,m,w,starting_points)
-        #lista di tuple
-        final_results.append((img ,loss_values[-1][1]))
+        #removing parent directory path and extension of the file
+        img_name = img[12:23]
+        final_results.append((img_name ,loss_values[-1][1]))
         iteration_results.append(loss_values)
     computation_time = time.time() - start 
     print("Time: {}".format(computation_time))
