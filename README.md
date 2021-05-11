@@ -9,6 +9,38 @@ Zhang's method is used to understand which are the camera parameters which allow
 * Nelder-Mead
 * Particle Swarm Optimization
 
+## Zhang's method - Refinement step for minimizing the reprojection error of the homography matrix
+Camera calibration is the process whereby all parameters defining the camera model are as accurately as possible estimated for a specific cameradevice.
+
+Camera calibration approach can rely on different images of one given planar pattern.
+
+Given a planar chessboard pattern, known are:
+* The number of internal corners of the pattern, different along the two orthogonal
+directions for the sake of disambiguation (i.e. rows, columns).
+
+* The size of the squares which form the pattern.
+
+Internal corners can be detected easily by standard algorithms (e.g. the Harris corner detector, possibly with sub pixel refinement for improved accuracy).
+
+<p align="center">
+  <img heigth="350" width="350" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQn18pfdpPqYyrb-9bDyzdvca5ca06kLz7xqg&usqp=CAU">
+</p>
+
+The intersted part of camera calibration implemented in this project is the minimization step of the reprojection error looking for the best homography. The homography is a matrix which represents a general linear transformation between planes. Starting from a pseudorandom homography matrix (H) we use optimization methods in order to find H that minimizes the loss function of the reprojection error: 
+
+<p align="center">
+  <img heigth="350" width="350" src="formulae.PNG">
+</p>
+
+where:
+* m are the image points in homogeneous coordinates (u,v,1)
+* w are real points in homogeneous coordinates (x,y,z,1) but since the pattern is planar z = 0 for each point, so coordinates are (x,y,1)
+* H is the homography matrix
+
+
+
+
+
 ## Nelder-Mead method
 
 <img align="left" heigth="350" width="350" src="https://rodolfoferro.files.wordpress.com/2017/02/gif1.gif">
@@ -37,7 +69,7 @@ Moreover a sort of correlation breaking has been implemented each 1000 iteration
 
 
 ## Requirements
-You need to have a Python version < 3.7 and installed the following libraries:
+You need to have a Python version < 3.7 (we suggest to use an Anaconda environment with Python version 3.5) and installed the following libraries:
 * OpenCV
 * Numpy
 * Matplotlib
