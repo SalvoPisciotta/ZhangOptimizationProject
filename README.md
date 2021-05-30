@@ -74,9 +74,9 @@ You need to have a Python version < 3.7 (we suggest to use an Anaconda environme
 * Numpy
 * Matplotlib
 
-## Suggestion for the creation of a working environment
+## Suggestions for the creation of a working environment
 Having corrected installed Anaconda on your PC you can follow this guide to create an environment that can execute the project:
-* Open Anaconda
+* Open Anaconda Navigator
 * Click on "Environments"
 * Press "Create" button
 * Insert the name and Python with version below 3.7 (we suggest 3.5)
